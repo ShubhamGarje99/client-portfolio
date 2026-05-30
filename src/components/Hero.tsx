@@ -1,81 +1,301 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, Suspense } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import gsap from "gsap";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import MagneticButton from "./MagneticButton";
 
-export default function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
+const vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 1.0);
+}
+`;
+
+const fragmentShader = `
+precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform float u_scrollSpeed;
+varying vec2 vUv;
+
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+float snoise(vec3 v) {
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}
+
+void main() {
+  vec2 uv = vUv;
+  float t = u_time * 0.15;
+
+  float n1 = snoise(vec3(uv * 1.8, t));
+  float n2 = snoise(vec3(uv * 3.2 + 100.0, t * 1.3));
+  float n = (n1 + n2 * 0.5) / 1.5;
+
+  vec3 color1 = vec3(0.02, 0.02, 0.02);
+  vec3 color2 = vec3(0.067, 0.055, 0.098);
+  vec3 col = mix(color1, color2, n * 0.5 + 0.5);
+
+  float chromaticOffset = u_scrollSpeed * 0.015;
+  vec3 rCol = mix(color1, color2, snoise(vec3(uv * 1.8 + vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5);
+  vec3 bCol = mix(color1, color2, snoise(vec3(uv * 1.8 - vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5);
+
+  col.r = rCol.r;
+  col.b = bCol.b;
+
+  float vignette = 1.0 - length((uv - 0.5) * 1.3);
+  col *= smoothstep(0.0, 0.7, vignette);
+
+  gl_FragColor = vec4(col, 0.9);
+}
+`;
+
+function ShaderPlane() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const { viewport } = useThree();
+  const scrollSpeedRef = useRef(0);
+  const lastScrollRef = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const current = window.scrollY;
+      scrollSpeedRef.current = Math.abs(current - lastScrollRef.current) * 0.01;
+      lastScrollRef.current = current;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    const material = meshRef.current.material as THREE.ShaderMaterial;
+    material.uniforms.u_time.value = state.clock.elapsedTime;
+    material.uniforms.u_scrollSpeed.value +=
+      (scrollSpeedRef.current - material.uniforms.u_scrollSpeed.value) * 0.05;
+    scrollSpeedRef.current *= 0.95;
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  return (
+    <mesh ref={meshRef} scale={[viewport.width, viewport.height, 1]}>
+      <planeGeometry args={[1, 1]} />
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={{
+          u_time: { value: 0 },
+          u_resolution: { value: [window.innerWidth, window.innerHeight] },
+          u_scrollSpeed: { value: 0 },
+        }}
+        transparent
+      />
+    </mesh>
+  );
+}
+
+function HeroBackground() {
+  return (
+    <>
+      {/* Mobile: static gradient fallback */}
+      <div
+        className="absolute inset-0 z-0 md:hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, #110e19 0%, #050505 70%)",
+        }}
+      />
+      {/* Desktop: Three.js shader */}
+      <div className="absolute inset-0 z-0 hidden md:block">
+        <Canvas
+          gl={{ alpha: true, antialias: false, powerPreference: "low-power" }}
+          dpr={1}
+          frameloop="always"
+        >
+          <Suspense fallback={null}>
+            <ShaderPlane />
+          </Suspense>
+        </Canvas>
+      </div>
+    </>
+  );
+}
+
+export default function Hero() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const borderTopRef = useRef<HTMLDivElement>(null);
+  const borderBottomRef = useRef<HTMLDivElement>(null);
+  const borderLeftRef = useRef<HTMLDivElement>(null);
+  const borderRightRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+    tl.set(
+      [borderTopRef.current, borderBottomRef.current],
+      { scaleX: 0 }
+    );
+    tl.set(
+      [borderLeftRef.current, borderRightRef.current],
+      { scaleY: 0 }
+    );
+    tl.set([tagRef.current, subRef.current, ctaRef.current], {
+      opacity: 0,
+      y: 20,
+    });
+
+    // Border draw
+    tl.to(
+      [borderTopRef.current, borderBottomRef.current],
+      { scaleX: 1, duration: 1.2, transformOrigin: "center" },
+      0
+    );
+    tl.to(
+      [borderLeftRef.current, borderRightRef.current],
+      { scaleY: 1, duration: 1.2, transformOrigin: "center" },
+      0
+    );
+
+    // Tag
+    tl.to(tagRef.current, { opacity: 1, y: 0, duration: 0.8 }, 0.3);
+
+    // Headline word reveal
+    if (headlineRef.current) {
+      const words = headlineRef.current.querySelectorAll(".word");
+      tl.fromTo(
+        words,
+        { yPercent: 110 },
+        { yPercent: 0, duration: 1, stagger: 0.05, ease: "expo.out" },
+        0.4
+      );
+    }
+
+    tl.to(subRef.current, { opacity: 1, y: 0, duration: 0.8 }, 0.8);
+    tl.to(ctaRef.current, { opacity: 1, y: 0, duration: 0.8 }, 1.0);
+
+    return () => {
+      tl.kill();
+    };
+  }, [reducedMotion]);
+
+  const headlineWords = "We build software for teams who care about the details.".split(" ");
 
   return (
     <section
-      ref={ref}
+      ref={sectionRef}
       className="relative min-h-[100dvh] flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-12 lg:px-24 overflow-hidden"
     >
-      <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl">
-        {/* Index marker */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex items-center gap-4 mb-10"
+      <HeroBackground />
+
+      {/* Hairline borders */}
+      <div
+        ref={borderTopRef}
+        className="absolute top-6 left-6 right-6 md:left-12 md:right-12 lg:left-24 lg:right-24 h-px bg-[#1a1a1a] origin-center z-10"
+      />
+      <div
+        ref={borderBottomRef}
+        className="absolute bottom-6 left-6 right-6 md:left-12 md:right-12 lg:left-24 lg:right-24 h-px bg-[#1a1a1a] origin-center z-10"
+      />
+      <div
+        ref={borderLeftRef}
+        className="absolute top-6 bottom-6 left-6 md:left-12 lg:left-24 w-px bg-[#1a1a1a] origin-center z-10"
+      />
+      <div
+        ref={borderRightRef}
+        className="absolute top-6 bottom-6 right-6 md:right-12 lg:right-24 w-px bg-[#1a1a1a] origin-center z-10"
+      />
+
+      <div className="relative z-10 max-w-6xl">
+        {/* Monospace Metadata Tag */}
+        <div
+          ref={tagRef}
+          className={`flex items-center gap-4 mb-10 ${reducedMotion ? "" : "opacity-0"}`}
         >
-          <span className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a]">
-            01
+          <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a]">
+            [ NODE 00 // SIGNAL STUDIO // CREATIVE ENGINEERING ]
           </span>
-          <div className="w-12 h-px bg-[#1a1a1a]" />
-          <span className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a]">
-            Digital Craft Studio
+        </div>
+
+        <h1
+          ref={headlineRef}
+          className="text-[clamp(2.5rem,10vw,8rem)] font-medium leading-[0.95] tracking-[-0.04em] text-[#f0f0f0] mb-8 max-w-5xl overflow-hidden"
+        >
+          <span className="flex flex-wrap gap-x-[0.25em] gap-y-0">
+            {headlineWords.map((word, i) => (
+              <span key={i} className="inline-block overflow-hidden">
+                <span className="word inline-block">{word}</span>
+              </span>
+            ))}
           </span>
-        </motion.div>
+        </h1>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-[clamp(2.5rem,8vw,7rem)] font-medium leading-[0.95] tracking-[-0.03em] text-[#f0f0f0] mb-8 max-w-5xl"
+        <p
+          ref={subRef}
+          className={`text-base md:text-lg text-[#5a5a5a] max-w-lg leading-relaxed mb-12 ${reducedMotion ? "" : "opacity-0"}`}
         >
-          We design and
-          <br />
-          engineer intelligent
-          <br />
-          <span className="text-[#3a3a3a]">digital products.</span>
-        </motion.h1>
+          An independent engineering studio constructing high-fidelity web
+          frontends, interactive design systems, and stable database
+          architectures. No compromise on performance, typography, or code
+          quality.
+        </p>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-base md:text-lg text-[#5a5a5a] max-w-md leading-relaxed mb-12"
-        >
-          For brands that refuse to look average. Strategy, design, and
-          engineering under one roof.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex items-center gap-6"
-        >
+        <div ref={ctaRef} className={`flex items-center gap-6 ${reducedMotion ? "" : "opacity-0"}`}>
           <MagneticButton variant="primary" href="#work">
-            View Work
+            Start building // →
           </MagneticButton>
-          <a
-            href="#contact"
-            className="text-[13px] tracking-wide text-[#5a5a5a] hover:text-[#f0f0f0] transition-colors duration-300"
-          >
-            Start a project
-          </a>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Vertical grid lines */}
       <div className="absolute inset-0 pointer-events-none z-[1]">

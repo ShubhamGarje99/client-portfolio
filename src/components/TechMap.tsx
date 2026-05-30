@@ -6,15 +6,19 @@ import { motion, useInView } from "framer-motion";
 const capabilities = [
   {
     domain: "Frontend",
-    tools: "Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Three.js",
+    tools: "Next.js, React, TypeScript, Tailwind CSS, Framer Motion, GSAP, Three.js / R3F",
   },
   {
     domain: "Backend & Data",
-    tools: "Node.js, PostgreSQL, Supabase, Python, REST, GraphQL",
+    tools: "Node.js, PostgreSQL, Supabase, Python, tRPC, GraphQL, Redis",
   },
   {
     domain: "AI & Automation",
-    tools: "LangGraph, OpenAI API, Claude, Kimi, n8n, Custom Agents",
+    tools: "LangChain, OpenAI API, Claude, Kimi, n8n, Custom Agent Orchestration",
+  },
+  {
+    domain: "Infrastructure",
+    tools: "Vercel, AWS, Docker, CI/CD, Edge Functions, CDN Optimization",
   },
 ];
 
@@ -37,7 +41,7 @@ function CapabilityRow({
       className="group grid md:grid-cols-12 gap-4 md:gap-8 py-7 md:py-8 items-baseline border-b border-[#1a1a1a]"
     >
       <div className="md:col-span-3">
-        <span className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] group-hover:text-[#c9a84c] transition-colors duration-300">
+        <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] group-hover:text-[#c9a84c] transition-colors duration-300">
           {cap.domain}
         </span>
       </div>
@@ -62,17 +66,17 @@ export default function TechMap() {
             initial={{ opacity: 0 }}
             animate={isHeaderInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-6"
+            className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-6"
           >
-            06 / Technology
+            [ STACK // TECHNOLOGY ]
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-[clamp(1.8rem,4.5vw,3.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-[#f0f0f0] max-w-2xl"
           >
-            Tools we master.
+            Tools we deploy in production.
           </motion.h2>
         </div>
 

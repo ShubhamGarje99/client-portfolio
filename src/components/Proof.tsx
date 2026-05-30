@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion";
 
 const metrics = [
   { value: "2-6", unit: "weeks", label: "Typical delivery" },
-  { value: "100", unit: "%", label: "Custom design" },
+  { value: "100", unit: "%", label: "Custom code" },
   { value: "0", unit: "", label: "Templates used" },
 ];
 
@@ -26,9 +26,9 @@ export default function Proof() {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-10"
+            className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-10"
           >
-            07 / Proof
+            [ EVIDENCE // OPERATIONAL METRICS ]
           </motion.span>
 
           <div className="grid md:grid-cols-3 gap-10 md:gap-16 border-t border-[#1a1a1a] pt-10">

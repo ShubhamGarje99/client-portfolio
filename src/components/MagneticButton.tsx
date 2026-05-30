@@ -19,7 +19,7 @@ export default function MagneticButton({
   href,
   variant = "primary",
 }: MagneticButtonProps) {
-  const ref = useRef<HTMLButtonElement | HTMLAnchorElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const reducedMotion = useReducedMotion();
 
@@ -47,20 +47,31 @@ export default function MagneticButton({
     ghost: "px-4 py-2 text-[#5a5a5a] hover:text-[#f0f0f0]",
   };
 
-  const Component = href ? motion.a : motion.button;
-  const props = href ? { href } : { onClick };
-
   return (
-    <Component
-      ref={ref as any}
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+    <motion.div
+      ref={ref}
+      className="inline-block"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      {...props}
     >
-      {children}
-    </Component>
+      {href ? (
+        <a
+          href={href}
+          className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+        >
+          {children}
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={onClick}
+          className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+        >
+          {children}
+        </button>
+      )}
+    </motion.div>
   );
 }

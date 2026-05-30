@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
-/* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
-  --color-background: #050505;
-  --color-foreground: #f0f0f0;
-  --color-muted: #8a8a8a;
-  --color-accent: #c9a84c;
-  --color-surface: #0f0f0f;
-  --color-border: #1a1a1a;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-void: #050505;
+  --color-obsidian: #0d0d0d;
+  --color-basalt: #121212;
+  --color-stardust: #ffffff;
+  --color-silver-dust: #f0f0f0;
+  --color-lead: #8a8a8a;
+  --color-aureolin: #c9a84c;
+  --color-amber-glow: #f3cf65;
+  --color-teal: #14c7c0;
+  --color-coal: #1a1a1a;
+  --color-muted: #3a3a3a;
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-cormorant), "Times New Roman", serif;
 }
 
 html {

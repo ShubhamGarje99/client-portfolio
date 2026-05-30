@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,23 +12,30 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
-  title: "Studio — Intelligent Digital Products",
+  title: "Signal Studio — Creative Engineering",
   description:
-    "We design and engineer intelligent digital products for brands that refuse to look average. Strategy, design, and engineering under one roof.",
+    "An independent engineering studio constructing high-fidelity web frontends, interactive design systems, and stable database architectures. No compromise on performance, typography, or code quality.",
   keywords: [
-    "digital agency",
-    "web design",
-    "AI products",
-    "automation",
+    "creative engineering",
+    "web frontend",
+    "design systems",
     "Next.js",
     "React",
     "TypeScript",
+    "Three.js",
   ],
   openGraph: {
-    title: "Studio — Intelligent Digital Products",
+    title: "Signal Studio — Creative Engineering",
     description:
-      "We design and engineer intelligent digital products for brands that refuse to look average.",
+      "An independent engineering studio constructing high-fidelity web frontends, interactive design systems, and stable database architectures.",
     type: "website",
   },
 };
@@ -41,9 +48,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#050505] text-[#f0f0f0]">
+      <body className="min-h-full flex flex-col bg-void text-silver-dust font-sans">
         {children}
       </body>
     </html>

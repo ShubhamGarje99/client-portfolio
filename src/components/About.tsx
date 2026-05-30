@@ -20,9 +20,9 @@ export default function About() {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-10"
+            className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-10"
           >
-            08 / About
+            [ STUDIO // ABOUT ]
           </motion.span>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16">
@@ -51,13 +51,13 @@ export default function About() {
               <div className="flex gap-12">
                 <div>
                   <span className="text-2xl font-medium text-[#f0f0f0]">5+</span>
-                  <p className="text-[11px] tracking-wider text-[#3a3a3a] mt-1">
+                  <p className="font-mono text-[11px] tracking-wider text-[#3a3a3a] mt-1">
                     Years of craft
                   </p>
                 </div>
                 <div>
                   <span className="text-2xl font-medium text-[#f0f0f0]">30+</span>
-                  <p className="text-[11px] tracking-wider text-[#3a3a3a] mt-1">
+                  <p className="font-mono text-[11px] tracking-wider text-[#3a3a3a] mt-1">
                     Projects shipped
                   </p>
                 </div>
