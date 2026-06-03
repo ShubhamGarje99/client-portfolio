@@ -96,9 +96,9 @@ export default function Process() {
     <section
       id="process"
       ref={sectionRef}
-      className="relative py-28 md:py-40 px-6 md:px-12 lg:px-24"
+      className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12"
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-20">
           <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-6">
             [ PROCESS 03 // ARCHITECTURAL ROUTE ]
@@ -108,9 +108,9 @@ export default function Process() {
           </h2>
         </div>
 
-        <div className="relative space-y-16 md:space-y-24">
+        <div className="relative space-y-12 md:space-y-16">
           {/* SVG connecting line aligned with dots */}
-          <div className="absolute left-[11px] md:left-[11px] top-2 bottom-0 w-px hidden lg:block">
+          <div className="absolute left-[11px] md:left-[11px] top-6 bottom-0 w-px hidden lg:block">
             <svg
               width="2"
               height="100%"
@@ -133,25 +133,36 @@ export default function Process() {
             <div
               key={stage.num}
               ref={(el) => { cardsRef.current[i] = el; }}
-              className="grid md:grid-cols-12 gap-6 md:gap-8 items-start group"
+              className="flex gap-6 md:gap-10 items-start group relative"
             >
-              <div className="md:col-span-3 flex items-start gap-4">
-                <div className="relative z-10">
-                  <div className="w-3 h-3 rounded-full bg-[#3a3a3a] group-hover:bg-[#14c7c0] transition-colors duration-500 mt-2" />
-                </div>
-                <div>
-                  <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-1">
-                    Stage {stage.num}
+              {/* Left: Timeline dot channel */}
+              <div className="flex flex-col items-center justify-start w-6 relative">
+                <div className="w-3 h-3 rounded-full bg-[#2a2a2a] group-hover:bg-[#14c7c0] group-hover:scale-125 transition-all duration-500 mt-6 z-10 relative" />
+              </div>
+
+              {/* Right: Glassmorphic Card */}
+              <div className="flex-1 bg-[#0a0a0a]/30 border border-[#141414] hover:border-[#14c7c0]/30 hover:bg-[#0c0c0c]/80 p-8 rounded-lg transition-all duration-500 relative overflow-hidden flex flex-col md:flex-row gap-6 md:gap-10 justify-between items-start min-h-[160px]">
+                {/* Roman Numeral Watermark in background */}
+                <span className="absolute right-6 bottom-[-20px] font-mono font-bold text-[120px] leading-none text-[#121212]/30 group-hover:text-[#181818]/40 transition-colors duration-500 pointer-events-none select-none">
+                  {stage.num}
+                </span>
+
+                {/* Title Details */}
+                <div className="max-w-xs relative z-10">
+                  <span className="font-mono text-[10px] tracking-widest text-[#2a2a2a] group-hover:text-[#14c7c0]/50 transition-colors duration-300 block mb-2">
+                    STAGE // 0{i + 1}
                   </span>
-                  <h3 className="text-lg md:text-xl font-medium text-[#f0f0f0] group-hover:text-[#c9a84c] transition-colors duration-300">
+                  <h3 className="text-lg font-medium text-[#f0f0f0] group-hover:text-[#14c7c0] transition-colors duration-300">
                     {stage.title}
                   </h3>
                 </div>
-              </div>
-              <div className="md:col-span-9 md:pl-12">
-                <p className="text-sm md:text-base text-[#5a5a5a] leading-relaxed max-w-2xl">
-                  {stage.description}
-                </p>
+
+                {/* Description */}
+                <div className="flex-1 max-w-xl relative z-10 md:pt-4">
+                  <p className="text-sm md:text-base text-[#5a5a5a] group-hover:text-[#8a8a8a] transition-colors duration-300 leading-relaxed">
+                    {stage.description}
+                  </p>
+                </div>
               </div>
             </div>
           ))}

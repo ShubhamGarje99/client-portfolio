@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
-  { label: "Work", href: "#work" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
   { label: "About", href: "#about" },
@@ -27,22 +26,22 @@ export default function Navigation() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-12 transition-all duration-500 ${
           isScrolled
             ? "bg-[#050505]/80 backdrop-blur-xl border-b border-[#1a1a1a]"
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-14 md:h-16">
             <a
               href="#"
-              className="text-sm font-medium tracking-[0.15em] uppercase text-[#f0f0f0]"
+              className="text-lg font-bold tracking-[0.2em] uppercase text-[#f0f0f0] hover:text-[#c9a84c] transition-colors duration-300"
             >
               Signal
             </a>
 
-            <nav className="hidden md:flex items-center gap-10">
+            <nav className="hidden md:flex items-center gap-12">
               {navItems.map((item) => (
                 <a
                   key={item.label}

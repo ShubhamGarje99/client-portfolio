@@ -45,7 +45,6 @@ function StudyCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const isEven = i % 2 === 0;
 
   return (
     <motion.div
@@ -53,11 +52,9 @@ function StudyCard({
       initial={{ opacity: 0, y: 60 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.9, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`grid lg:grid-cols-12 gap-8 lg:gap-16 items-start py-20 md:py-28 border-t border-[#1a1a1a] ${
-        isEven ? "" : "lg:flex-row-reverse"
-      }`}
+      className="py-16 md:py-24 border-t border-[#1a1a1a]"
     >
-      <div className={`lg:col-span-5 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
+      <div className="max-w-3xl">
         <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-4">
           {study.index} / {study.sector}
         </span>
@@ -72,130 +69,9 @@ function StudyCard({
         <p className="font-serif italic text-lg md:text-xl text-[#5a5a5a] leading-relaxed mb-8">
           {study.tagline}
         </p>
-        <p className="text-sm text-[#5a5a5a] leading-relaxed max-w-md">
+        <p className="text-sm text-[#5a5a5a] leading-relaxed max-w-2xl">
           {study.summary}
         </p>
-      </div>
-
-      <div
-        className={`lg:col-span-7 ${isEven ? "lg:order-2" : "lg:order-1"}`}
-      >
-        <div className="relative aspect-[16/10] bg-[#0d0d0d] border border-[#1a1a1a] overflow-hidden group">
-          {/* Abstract pattern placeholder */}
-          <div className="absolute inset-0 opacity-30" aria-hidden="true">
-            <svg
-              className="w-full h-full"
-              viewBox="0 0 800 500"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <defs>
-                <pattern
-                  id={`grid-${study.index}`}
-                  width="40"
-                  height="40"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 40 0 L 0 0 0 40"
-                    fill="none"
-                    stroke="#1a1a1a"
-                    strokeWidth="0.5"
-                  />
-                </pattern>
-              </defs>
-              <rect
-                width="800"
-                height="500"
-                fill={`url(#grid-${study.index})`}
-              />
-              <rect
-                x="60"
-                y="40"
-                width="680"
-                height="4"
-                fill="#1a1a1a"
-                rx="2"
-              />
-              <rect
-                x="60"
-                y="60"
-                width="480"
-                height="4"
-                fill="#1a1a1a"
-                rx="2"
-              />
-              <rect
-                x="60"
-                y="80"
-                width="560"
-                height="4"
-                fill="#1a1a1a"
-                rx="2"
-              />
-              {study.id === 1 && (
-                <>
-                  <circle cx="200" cy="250" r="80" stroke="#c9a84c" strokeWidth="0.5" fill="none" opacity="0.3" />
-                  <circle cx="500" cy="300" r="60" stroke="#14c7c0" strokeWidth="0.5" fill="none" opacity="0.3" />
-                  <line x1="200" y1="250" x2="500" y2="300" stroke="#1a1a1a" strokeWidth="0.5" />
-                  <line x1="200" y1="250" x2="350" y2="180" stroke="#1a1a1a" strokeWidth="0.5" />
-                </>
-              )}
-              {study.id === 2 && (
-                <>
-                  <path d="M 100 400 Q 300 100 500 300 T 700 200" stroke="#c9a84c" strokeWidth="1" fill="none" opacity="0.4" />
-                  <path d="M 150 420 Q 350 120 550 320 T 750 220" stroke="#14c7c0" strokeWidth="0.5" fill="none" opacity="0.3" />
-                </>
-              )}
-              {study.id === 3 && (
-                <>
-                  {[
-                    [80, 180, 12, 140],
-                    [110, 220, 12, 100],
-                    [140, 160, 12, 160],
-                    [170, 200, 12, 120],
-                    [200, 240, 12, 80],
-                    [230, 170, 12, 150],
-                    [260, 210, 12, 110],
-                    [290, 190, 12, 130],
-                    [320, 230, 12, 90],
-                    [350, 175, 12, 145],
-                    [380, 205, 12, 115],
-                    [410, 185, 12, 135],
-                    [440, 225, 12, 95],
-                    [470, 165, 12, 155],
-                    [500, 195, 12, 125],
-                    [530, 215, 12, 105],
-                    [560, 175, 12, 145],
-                    [590, 235, 12, 85],
-                    [620, 185, 12, 135],
-                    [650, 205, 12, 115],
-                  ].map(([x, y, w, h], idx) => (
-                    <rect
-                      key={idx}
-                      x={x}
-                      y={y}
-                      width={w}
-                      height={h}
-                      fill="#1a1a1a"
-                      rx="2"
-                    />
-                  ))}
-                </>
-              )}
-            </svg>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/60 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-            <span className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#3a3a3a]">
-              {study.sector}
-            </span>
-            <span className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#c9a84c]">
-              {study.impact}
-            </span>
-          </div>
-        </div>
       </div>
     </motion.div>
   );

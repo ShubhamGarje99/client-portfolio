@@ -74,7 +74,6 @@ function AnimatedCounter({
 
 export default function PeerValidation() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const spotlightRef = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
   const reducedMotion = useReducedMotion();
   const effectivelyActive = isActive || reducedMotion;
@@ -97,33 +96,14 @@ export default function PeerValidation() {
     };
   }, [reducedMotion]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!spotlightRef.current) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotlightRef.current.style.left = `${e.clientX - rect.left - 300}px`;
-    spotlightRef.current.style.top = `${e.clientY - rect.top - 300}px`;
-  };
-
   return (
     <section
       id="metrics"
       ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      className="relative py-28 md:py-40 px-6 md:px-12 lg:px-24 overflow-hidden"
+      className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12 overflow-hidden"
     >
-      {/* Spotlight */}
-      {!reducedMotion && (
-        <div
-          ref={spotlightRef}
-          className="absolute pointer-events-none z-0 w-[600px] h-[600px] rounded-full opacity-0 transition-opacity duration-700"
-          style={{
-            background: "radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)",
-            ...(effectivelyActive && { opacity: 1 }),
-          }}
-        />
-      )}
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-16">
           [ DATA 01 // CORE METRICS ]
         </span>

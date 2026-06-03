@@ -41,9 +41,9 @@ export default function MagneticButton({
     "relative inline-flex items-center justify-center text-[13px] font-medium tracking-wide uppercase transition-all duration-300";
 
   const variantStyles = {
-    primary: "px-7 py-3.5 bg-[#c9a84c] text-[#050505] hover:bg-[#d4b45a]",
+    primary: "px-7 py-3.5 bg-[#14c7c0] text-[#050505] hover:bg-[#1fdad3]",
     secondary:
-      "px-7 py-3.5 border border-[#2a2a2a] text-[#f0f0f0] hover:border-[#c9a84c] hover:text-[#c9a84c]",
+      "px-7 py-3.5 border border-[#2a2a2a] text-[#f0f0f0] hover:border-[#14c7c0] hover:text-[#14c7c0]",
     ghost: "px-4 py-2 text-[#5a5a5a] hover:text-[#f0f0f0]",
   };
 

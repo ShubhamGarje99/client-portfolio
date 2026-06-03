@@ -55,28 +55,38 @@ function ServiceItem({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.08 }}
-      className="group border-b border-[#1a1a1a]"
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
+      className="group relative bg-[#0a0a0a]/30 border border-[#141414] hover:border-[#14c7c0]/30 hover:bg-[#0c0c0c]/80 p-8 flex flex-col justify-between min-h-[260px] transition-all duration-500 overflow-hidden"
     >
-      <div className="py-7 md:py-8 grid md:grid-cols-12 gap-4 md:gap-8 items-baseline">
-        <div className="md:col-span-1">
-          <span className="font-mono text-[11px] tracking-wider text-[#3a3a3a]">
-            {service.num}
-          </span>
-        </div>
-        <div className="md:col-span-4">
-          <h3 className="text-lg md:text-xl font-medium text-[#f0f0f0] group-hover:text-[#c9a84c] transition-colors duration-300">
-            {service.title}
-          </h3>
-        </div>
-        <div className="md:col-span-7">
-          <p className="text-sm text-[#5a5a5a] leading-relaxed max-w-lg group-hover:text-[#8a8a8a] transition-colors duration-300">
-            {service.description}
-          </p>
-        </div>
+      {/* Teal top edge radial glow */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 50% 0%, rgba(20, 199, 192, 0.04) 0%, transparent 60%)"
+        }}
+      />
+
+      <div>
+        {/* Floating index */}
+        <span className="font-mono text-[10px] tracking-widest text-[#2a2a2a] group-hover:text-[#14c7c0]/50 transition-colors duration-300 block mb-6">
+          // {service.num}
+        </span>
+
+        {/* Title */}
+        <h3 className="text-lg font-medium text-[#f0f0f0] group-hover:text-[#14c7c0] transition-colors duration-300 mb-4">
+          {service.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-sm text-[#5a5a5a] group-hover:text-[#8a8a8a] transition-colors duration-300 leading-relaxed">
+          {service.description}
+        </p>
       </div>
+
+      {/* Dynamic bottom indicator line */}
+      <div className="w-6 h-[1px] bg-[#1a1a1a] group-hover:w-12 group-hover:bg-[#14c7c0] transition-all duration-500 mt-8" />
     </motion.div>
   );
 }
@@ -86,9 +96,9 @@ export default function Services() {
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="services" className="relative py-28 md:py-40 px-6 md:px-12 lg:px-24">
-      <div className="max-w-5xl mx-auto">
-        <div ref={headerRef} className="mb-14 md:mb-18">
+    <section id="services" className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12">
+      <div className="max-w-7xl mx-auto">
+        <div ref={headerRef} className="mb-16 md:mb-20">
           <motion.span
             initial={{ opacity: 0 }}
             animate={isHeaderInView ? { opacity: 1 } : {}}
@@ -107,7 +117,7 @@ export default function Services() {
           </motion.h2>
         </div>
 
-        <div className="border-t border-[#1a1a1a]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <ServiceItem key={service.num} service={service} index={index} />
           ))}

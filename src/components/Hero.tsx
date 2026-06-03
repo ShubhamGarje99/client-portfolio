@@ -167,14 +167,11 @@ function HeroBackground() {
 
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const tagRef = useRef<HTMLDivElement>(null);
+
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const borderTopRef = useRef<HTMLDivElement>(null);
-  const borderBottomRef = useRef<HTMLDivElement>(null);
-  const borderLeftRef = useRef<HTMLDivElement>(null);
-  const borderRightRef = useRef<HTMLDivElement>(null);
+
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -182,33 +179,16 @@ export default function Hero() {
 
     const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
 
-    tl.set(
-      [borderTopRef.current, borderBottomRef.current],
-      { scaleX: 0 }
-    );
-    tl.set(
-      [borderLeftRef.current, borderRightRef.current],
-      { scaleY: 0 }
-    );
-    tl.set([tagRef.current, subRef.current, ctaRef.current], {
+
+    tl.set([subRef.current, ctaRef.current], {
       opacity: 0,
       y: 20,
     });
 
-    // Border draw
-    tl.to(
-      [borderTopRef.current, borderBottomRef.current],
-      { scaleX: 1, duration: 1.2, transformOrigin: "center" },
-      0
-    );
-    tl.to(
-      [borderLeftRef.current, borderRightRef.current],
-      { scaleY: 1, duration: 1.2, transformOrigin: "center" },
-      0
-    );
+
 
     // Tag
-    tl.to(tagRef.current, { opacity: 1, y: 0, duration: 0.8 }, 0.3);
+
 
     // Headline word reveal
     if (headlineRef.current) {
@@ -234,38 +214,14 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100dvh] flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-12 lg:px-24 overflow-hidden"
+      className="relative min-h-[100dvh] flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-12 lg:px-12 overflow-hidden"
     >
       <HeroBackground />
 
-      {/* Hairline borders */}
-      <div
-        ref={borderTopRef}
-        className="absolute top-6 left-6 right-6 md:left-12 md:right-12 lg:left-24 lg:right-24 h-px bg-[#1a1a1a] origin-center z-10"
-      />
-      <div
-        ref={borderBottomRef}
-        className="absolute bottom-6 left-6 right-6 md:left-12 md:right-12 lg:left-24 lg:right-24 h-px bg-[#1a1a1a] origin-center z-10"
-      />
-      <div
-        ref={borderLeftRef}
-        className="absolute top-6 bottom-6 left-6 md:left-12 lg:left-24 w-px bg-[#1a1a1a] origin-center z-10"
-      />
-      <div
-        ref={borderRightRef}
-        className="absolute top-6 bottom-6 right-6 md:right-12 lg:right-24 w-px bg-[#1a1a1a] origin-center z-10"
-      />
 
-      <div className="relative z-10 max-w-6xl">
-        {/* Monospace Metadata Tag */}
-        <div
-          ref={tagRef}
-          className={`flex items-center gap-4 mb-10 ${reducedMotion ? "" : "opacity-0"}`}
-        >
-          <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a]">
-            [ NODE 00 // SIGNAL STUDIO // CREATIVE ENGINEERING ]
-          </span>
-        </div>
+
+      <div className="relative z-10 max-w-7xl w-full mx-auto">
+
 
         <h1
           ref={headlineRef}
@@ -291,7 +247,7 @@ export default function Hero() {
         </p>
 
         <div ref={ctaRef} className={`flex items-center gap-6 ${reducedMotion ? "" : "opacity-0"}`}>
-          <MagneticButton variant="primary" href="#work">
+          <MagneticButton variant="secondary" href="#contact">
             Start building // →
           </MagneticButton>
         </div>

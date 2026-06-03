@@ -42,3 +42,4 @@ export default function ScrollProvider({
 
   return <>{children}</>;
 }
+

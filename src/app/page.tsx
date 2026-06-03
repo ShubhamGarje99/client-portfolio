@@ -6,7 +6,6 @@ import CustomCursor from "@/components/CustomCursor";
 import NoiseOverlay from "@/components/NoiseOverlay";
 import Hero from "@/components/Hero";
 import PeerValidation from "@/components/PeerValidation";
-import CaseStudies from "@/components/CaseStudies";
 import Services from "@/components/Services";
 import Process from "@/components/Process";
 import TechMap from "@/components/TechMap";
@@ -25,7 +24,6 @@ export default function Home() {
       <main className="relative z-10">
         <Hero />
         <PeerValidation />
-        <CaseStudies />
         <Services />
         <Process />
         <TechMap />
