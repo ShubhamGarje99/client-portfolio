@@ -82,7 +82,7 @@ export default function CaseStudies() {
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="work" className="relative py-28 md:py-40 px-6 md:px-12 lg:px-24">
+    <section id="work" className="relative py-16 md:py-24 px-6 md:px-12 lg:px-24">
       <div className="max-w-6xl mx-auto">
         <div ref={headerRef} className="mb-16 md:mb-24">
           <motion.span

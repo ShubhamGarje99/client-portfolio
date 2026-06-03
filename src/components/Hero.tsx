@@ -72,27 +72,50 @@ float snoise(vec3 v) {
 
 void main() {
   vec2 uv = vUv;
-  float t = u_time * 0.15;
+  float t = u_time * 0.12;
 
-  float n1 = snoise(vec3(uv * 1.8, t));
-  float n2 = snoise(vec3(uv * 3.2 + 100.0, t * 1.3));
-  float n = (n1 + n2 * 0.5) / 1.5;
+  // Slow, layered noise for atmospheric depth
+  float n1 = snoise(vec3(uv * 1.4, t));
+  float n2 = snoise(vec3(uv * 2.8 + 50.0, t * 1.2));
+  float n3 = snoise(vec3(uv * 0.6 + 200.0, t * 0.5));
+  float n = (n1 * 0.6 + n2 * 0.3 + n3 * 0.1);
 
-  vec3 color1 = vec3(0.02, 0.02, 0.02);
-  vec3 color2 = vec3(0.067, 0.055, 0.098);
-  vec3 col = mix(color1, color2, n * 0.5 + 0.5);
+  // Deep void black base, teal/cyan glow accent — matches #14c7c0 cursor
+  vec3 base   = vec3(0.020, 0.020, 0.020);  // #050505 void
+  vec3 teal   = vec3(0.078, 0.420, 0.408);  // teal ambient #14c7c0 desaturated dark
+  vec3 teal2  = vec3(0.035, 0.200, 0.195);  // deeper teal for second layer
 
-  float chromaticOffset = u_scrollSpeed * 0.015;
-  vec3 rCol = mix(color1, color2, snoise(vec3(uv * 1.8 + vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5);
-  vec3 bCol = mix(color1, color2, snoise(vec3(uv * 1.8 - vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5);
+  // Circular radial glow — brighter toward the bottom-right where cursor lives
+  float dist1 = 1.0 - length((uv - vec2(0.75, 0.65)) * 1.5);
+  float dist2 = 1.0 - length((uv - vec2(0.15, 0.35)) * 2.0);
+  float glow1 = smoothstep(0.0, 1.0, dist1) * 0.7;
+  float glow2 = smoothstep(0.0, 1.0, dist2) * 0.35;
 
-  col.r = rCol.r;
-  col.b = bCol.b;
+  // Noise-driven color mix — teal breathes with the noise field
+  float noiseVal = n * 0.5 + 0.5;
+  vec3 col = base;
+  col = mix(col, teal2, noiseVal * glow1);
+  col = mix(col, teal,  noiseVal * glow1 * 0.5);
+  col = mix(col, teal2, noiseVal * glow2);
 
-  float vignette = 1.0 - length((uv - 0.5) * 1.3);
-  col *= smoothstep(0.0, 0.7, vignette);
+  // Chromatic separation on scroll
+  float chromaticOffset = u_scrollSpeed * 0.02;
+  float rNoise = snoise(vec3(uv * 1.4 + vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5;
+  float bNoise = snoise(vec3(uv * 1.4 - vec2(chromaticOffset, 0.0), t)) * 0.5 + 0.5;
+  col.r = mix(col.r, col.r * 0.6, rNoise * glow1 * 0.3);
+  col.b = mix(col.b, col.b * 1.4, bNoise * glow1 * 0.3);
 
-  gl_FragColor = vec4(col, 0.9);
+  // Soft vignette — kills color at outer circle, keeps center alive
+  float vignette = 1.0 - length((uv - 0.5) * 1.4);
+  float vigFade = smoothstep(0.0, 0.8, vignette);
+
+  // Hard edge fade — alpha goes to 0 at mesh borders
+  float edgeX = min(uv.x, 1.0 - uv.x);
+  float edgeY = min(uv.y, 1.0 - uv.y);
+  float borderFade = smoothstep(0.0, 0.08, edgeX) * smoothstep(0.0, 0.08, edgeY);
+
+  float alpha = vigFade * borderFade;
+  gl_FragColor = vec4(col, alpha);
 }
 `;
 
@@ -114,6 +137,7 @@ function ShaderPlane() {
 
   useFrame((state) => {
     if (!meshRef.current) return;
+    meshRef.current.scale.set(state.viewport.width, state.viewport.height, 1);
     const material = meshRef.current.material as THREE.ShaderMaterial;
     material.uniforms.u_time.value = state.clock.elapsedTime;
     material.uniforms.u_scrollSpeed.value +=
@@ -122,7 +146,7 @@ function ShaderPlane() {
   });
 
   return (
-    <mesh ref={meshRef} scale={[viewport.width, viewport.height, 1]}>
+    <mesh ref={meshRef}>
       <planeGeometry args={[1, 1]} />
       <shaderMaterial
         vertexShader={vertexShader}
@@ -146,7 +170,7 @@ function HeroBackground() {
         className="absolute inset-0 z-0 md:hidden"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, #110e19 0%, #050505 70%)",
+            "radial-gradient(ellipse at 70% 60%, rgba(20, 199, 192, 0.12) 0%, #050505 65%)",
         }}
       />
       {/* Desktop: Three.js shader */}
@@ -213,8 +237,9 @@ export default function Hero() {
 
   return (
     <section
+      id="hero"
       ref={sectionRef}
-      className="relative min-h-[100dvh] flex flex-col justify-end pb-16 md:pb-24 px-6 md:px-12 lg:px-12 overflow-hidden"
+      className="relative min-h-[100dvh] flex flex-col justify-end pb-12 md:pb-20 px-6 md:px-12 lg:px-12 overflow-hidden"
     >
       <HeroBackground />
 

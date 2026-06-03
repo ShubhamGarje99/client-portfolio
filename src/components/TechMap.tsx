@@ -76,7 +76,7 @@ export default function TechMap() {
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="tech" className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12">
+    <section id="tech" className="relative py-16 md:py-24 px-6 md:px-12 lg:px-12">
       <div className="max-w-7xl mx-auto">
         <div ref={headerRef} className="mb-14 md:mb-18">
           <motion.span

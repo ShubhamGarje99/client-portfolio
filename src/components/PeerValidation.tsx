@@ -100,7 +100,7 @@ export default function PeerValidation() {
     <section
       id="metrics"
       ref={sectionRef}
-      className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12 overflow-hidden"
+      className="relative pt-16 pb-28 md:pt-24 md:pb-40 px-6 md:px-12 lg:px-12 overflow-hidden"
     >
 
       <div className="max-w-7xl mx-auto relative z-10">

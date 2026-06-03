@@ -33,7 +33,7 @@ export default function CTA() {
   ];
 
   return (
-    <section id="contact" className="relative py-28 md:py-40 px-6 md:px-12 lg:px-12">
+    <section id="contact" className="relative py-32 md:py-48 px-6 md:px-12 lg:px-12">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}

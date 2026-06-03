@@ -14,6 +14,18 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const targetId = href.replace("#", "");
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+      }
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -36,6 +48,7 @@ export default function Navigation() {
           <div className="flex items-center justify-between h-14 md:h-16">
             <a
               href="#"
+              onClick={(e) => handleScrollTo(e, "#hero")}
               className="text-lg font-bold tracking-[0.2em] uppercase text-[#f0f0f0] hover:text-[#c9a84c] transition-colors duration-300"
             >
               Signal
@@ -46,6 +59,7 @@ export default function Navigation() {
                 <a
                   key={item.label}
                   href={item.href}
+                  onClick={(e) => handleScrollTo(e, item.href)}
                   className="text-[13px] tracking-wide text-[#5a5a5a] hover:text-[#f0f0f0] transition-colors duration-300"
                 >
                   {item.label}
@@ -98,7 +112,7 @@ export default function Navigation() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08, duration: 0.4 }}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => handleScrollTo(e as any, item.href)}
                   className="text-4xl font-medium text-[#f0f0f0] py-3 border-b border-[#1a1a1a]"
                 >
                   {item.label}
