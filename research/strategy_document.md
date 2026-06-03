@@ -62,7 +62,7 @@ graph TD
     C -->|Competence & Code Proof| D[Section 4: System Architecture & Pipeline Flow]
     D -->|Integrity & Process Proof| E[Section 5: Curated Editorial Case Studies]
     E -->|Depth & Relevance Proof| F[Section 6: Dynamic Conversion Portal]
-    F -->|Action & Intent| G[Goal: Highly Qualified Qualified Lead]
+    F -->|Action & Intent| G[Goal: Highly Qualified Lead]
 ```
 
 ### The Sections Hierarchy
@@ -166,7 +166,7 @@ Visual complexity must never compromise speed. The website remains blazingly res
 
 ---
 
-## 7. Anti-AI-Slop & Craft Coprywriting Rules
+## 7. Anti-AI-Slop & Craft Copywriting Rules
 
 To maintain high editorial authority and keep our copy human, direct, and sophisticated, we enforce strict copywriting guidelines.
 
@@ -418,7 +418,7 @@ Before deploying the final portfolio code, developers and designers must verify 
  │  [ ] Dynamic asymmetry governs all portfolio listings. │
  │  [ ] Every viewport has at least 15% breathing space.   │
  │                                                        │
- │  Coprywriting & Tone Audits:                           │
+    │  Copywriting & Tone Audits:                           │
  │  [ ] Zero occurrences of banned AI-isms (e.g. utilize). │
  │  [ ] Sentence case is used on all headers.            │
  │  [ ] Monotone rhythmic sentence patterns are removed.   │
