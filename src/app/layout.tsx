@@ -20,9 +20,9 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Signal Studio — Creative Engineering",
+  title: "signaldev — Creative Engineering",
   description:
-    "An independent engineering studio constructing high-fidelity web frontends, interactive design systems, and stable database architectures. No compromise on performance, typography, or code quality.",
+    "An independent engineering agency constructing high-fidelity web frontends, interactive design systems, and stable database architectures. No compromise on performance, typography, or code quality.",
   keywords: [
     "creative engineering",
     "web frontend",
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     "Three.js",
   ],
   openGraph: {
-    title: "Signal Studio — Creative Engineering",
+    title: "signaldev — Creative Engineering",
     description:
-      "An independent engineering studio constructing high-fidelity web frontends, interactive design systems, and stable database architectures.",
+      "An independent engineering agency constructing high-fidelity web frontends, interactive design systems, and stable database architectures.",
     type: "website",
   },
 };

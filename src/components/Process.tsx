@@ -97,9 +97,9 @@ export default function Process() {
     <section
       id="process"
       ref={sectionRef}
-      className="relative py-16 md:py-24 px-6 md:px-12 lg:px-12"
+      className="relative min-h-[100dvh] flex flex-col justify-center py-20 px-6 md:px-12 lg:px-12"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl w-full mx-auto">
         <div className="mb-10">
           <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] block mb-6">
             [ PROCESS 03 // ARCHITECTURAL ROUTE ]

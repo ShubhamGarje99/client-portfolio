@@ -38,20 +38,19 @@ export default function Navigation() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-12 transition-all duration-500 ${
-          isScrolled
-            ? "bg-[#050505]/80 backdrop-blur-xl border-b border-[#1a1a1a]"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-12 transition-all duration-500 ${isScrolled
+          ? "bg-[#050505]/80 backdrop-blur-xl border-b border-[#1a1a1a]"
+          : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-14 md:h-16">
             <a
               href="#"
               onClick={(e) => handleScrollTo(e, "#hero")}
-              className="text-lg font-bold tracking-[0.2em] uppercase text-[#f0f0f0] hover:text-[#c9a84c] transition-colors duration-300"
+              className="text-lg font-bold tracking-[0.2em] uppercase text-[#f0f0f0] hover:text-[#14c7c0] transition-colors duration-300"
             >
-              Signal
+              signaldev
             </a>
 
             <nav className="hidden md:flex items-center gap-12">
@@ -60,7 +59,7 @@ export default function Navigation() {
                   key={item.label}
                   href={item.href}
                   onClick={(e) => handleScrollTo(e, item.href)}
-                  className="text-[13px] tracking-wide text-[#5a5a5a] hover:text-[#f0f0f0] transition-colors duration-300"
+                  className="text-[13px] tracking-wide text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300"
                 >
                   {item.label}
                 </a>

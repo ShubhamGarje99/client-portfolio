@@ -33,8 +33,8 @@ export default function CTA() {
   ];
 
   return (
-    <section id="contact" className="relative py-32 md:py-48 px-6 md:px-12 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+    <section id="contact" className="relative min-h-[100dvh] flex flex-col justify-center py-20 px-6 md:px-12 lg:px-12">
+      <div className="max-w-7xl w-full mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0 }}
@@ -180,7 +180,7 @@ export default function CTA() {
               </div>
 
               <div className="mt-10 flex items-center gap-6">
-                <MagneticButton variant="primary" href="mailto:hello@signalstudio.dev">
+                <MagneticButton variant="primary" href="mailto:hello@signaldev.dev">
                   Deploy Inquiry // →
                 </MagneticButton>
               </div>
@@ -194,10 +194,10 @@ export default function CTA() {
             className="border-t border-[#141414] pt-8"
           >
             <a
-              href="mailto:hello@signalstudio.dev"
+              href="mailto:hello@signaldev.dev"
               className="text-sm font-mono tracking-wider text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300"
             >
-              hello@signalstudio.dev
+              hello@signaldev.dev
             </a>
           </motion.div>
         </motion.div>

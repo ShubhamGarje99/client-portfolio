@@ -96,8 +96,8 @@ export default function Services() {
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="services" className="relative pt-28 pb-16 md:pt-40 md:pb-24 px-6 md:px-12 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+    <section id="services" className="relative min-h-[100dvh] flex flex-col justify-center py-20 px-6 md:px-12 lg:px-12">
+      <div className="max-w-7xl w-full mx-auto">
         <div ref={headerRef} className="mb-16 md:mb-20">
           <motion.span
             initial={{ opacity: 0 }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useMotionValue, useMotionTemplate } from "framer-motion";
 
 const capabilities = [
   {
@@ -33,20 +33,44 @@ function CapabilityRow({
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const toolsArray = cap.tools.split(", ");
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 15 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative grid md:grid-cols-12 gap-6 md:gap-8 py-8 md:py-10 items-start border-b border-[#141414] pl-6 -ml-6 pr-6 -mr-6 rounded-xl hover:bg-[#070707]/60 hover:border-b-transparent transition-all duration-500"
+      onMouseMove={handleMouseMove}
+      className="group relative grid md:grid-cols-12 gap-6 md:gap-8 py-8 md:py-10 items-start border-b border-[#141414] pl-6 -ml-6 pr-6 -mr-6 rounded-xl hover:bg-[#ffffff]/[0.015] hover:border-b-transparent transition-all duration-500 cursor-pointer overflow-hidden"
     >
-      {/* Interactive left accent line indicator */}
-      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-[#14c7c0] scale-y-0 group-hover:scale-y-100 transition-all duration-500 origin-center" />
+      {/* Background Spotlight Glow */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition duration-300"
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              300px circle at ${mouseX}px ${mouseY}px,
+              rgba(20, 199, 192, 0.08),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+
+      {/* Interactive left accent line indicator with glow */}
+      <div className="absolute left-0 top-1/4 bottom-1/4 w-[3px] bg-transparent group-hover:bg-[#14c7c0] scale-y-0 group-hover:scale-y-100 transition-all duration-500 origin-center rounded-r shadow-[0_0_12px_#14c7c0]" />
 
       {/* Index & Domain Column */}
-      <div className="md:col-span-4 flex gap-4 items-baseline">
-        <span className="font-mono text-[10px] tracking-wider text-[#2a2a2a] group-hover:text-[#14c7c0]/40 transition-colors duration-300">
+      <div className="md:col-span-4 flex gap-4 items-baseline group-hover:translate-x-2 transition-transform duration-500 ease-out z-10">
+        <span className="font-mono text-[10px] tracking-wider text-[#2a2a2a] group-hover:text-[#14c7c0]/50 transition-colors duration-300">
           0{index + 1} //
         </span>
         <h3 className="font-mono text-sm tracking-[0.15em] uppercase text-[#4a4a4a] group-hover:text-[#14c7c0] transition-colors duration-500 font-semibold">
@@ -55,12 +79,12 @@ function CapabilityRow({
       </div>
 
       {/* Tools Tag Collection Column */}
-      <div className="md:col-span-8">
+      <div className="md:col-span-8 group-hover:translate-x-1 transition-transform duration-500 ease-out z-10">
         <div className="flex flex-wrap gap-2">
           {toolsArray.map((tool) => (
             <span
               key={tool}
-              className="px-3 py-1.5 text-[11px] font-mono bg-[#0a0a0a]/30 border border-[#141414] rounded-md text-[#5a5a5a] group-hover:text-[#7a7a7a] hover:!text-[#14c7c0] hover:!border-[#14c7c0]/30 hover:!bg-[#0c0c0c]/80 transition-all duration-300 select-none cursor-default"
+              className="px-3 py-1.5 text-[11px] font-mono bg-[#0a0a0a]/30 border border-[#141414] rounded-md text-[#5a5a5a] group-hover:text-[#8a8a8a] hover:!text-[#14c7c0] hover:!border-[#14c7c0]/40 hover:!bg-[#14c7c0]/5 hover:-translate-y-0.5 transition-all duration-300 select-none cursor-default shadow-sm hover:shadow-[0_0_10px_rgba(20,199,192,0.1)] inline-block transform"
             >
               {tool}
             </span>
@@ -76,8 +100,8 @@ export default function TechMap() {
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
   return (
-    <section id="tech" className="relative py-16 md:py-24 px-6 md:px-12 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+    <section id="tech" className="relative min-h-[100dvh] flex flex-col justify-center py-20 px-6 md:px-12 lg:px-12">
+      <div className="max-w-7xl w-full mx-auto">
         <div ref={headerRef} className="mb-14 md:mb-18">
           <motion.span
             initial={{ opacity: 0 }}

@@ -14,8 +14,8 @@ export default function Proof() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="proof" className="relative py-32 md:py-48 px-6 md:px-12 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+    <section id="proof" className="relative min-h-[100dvh] flex flex-col justify-center py-20 px-6 md:px-12 lg:px-12">
+      <div className="max-w-7xl w-full mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0 }}
