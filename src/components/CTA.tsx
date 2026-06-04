@@ -188,17 +188,97 @@ export default function CTA() {
           )}
 
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="border-t border-[#141414] pt-8"
+            className="border-t border-[#141414] pt-10"
           >
-            <a
-              href="mailto:hello@signaldev.dev"
-              className="text-sm font-mono tracking-wider text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300"
-            >
-              hello@signaldev.dev
-            </a>
+            <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#3a3a3a] mb-6">
+              [ DIRECT // REACH US ]
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Armaan Dixit */}
+              <div className="group relative bg-[#0a0a0a]/40 border border-[#141414] hover:border-[#14c7c0]/30 rounded-xl p-6 transition-all duration-500 overflow-hidden">
+                {/* Teal corner glow */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-xl"
+                  style={{ background: "radial-gradient(circle at 0% 0%, rgba(20,199,192,0.07) 0%, transparent 60%)" }}
+                />
+                {/* Accent top bar */}
+                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#14c7c0]/80 via-[#14c7c0]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="relative z-10 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    {/* Avatar initial */}
+                    <div className="w-9 h-9 rounded-lg bg-[#14c7c0]/10 border border-[#14c7c0]/20 flex items-center justify-center group-hover:bg-[#14c7c0]/15 transition-colors duration-300">
+                      <span className="font-mono text-[13px] font-semibold text-[#14c7c0]">AD</span>
+                    </div>
+                    <div>
+                      <p className="text-[#f0f0f0] font-medium text-[15px] leading-tight group-hover:text-[#14c7c0] transition-colors duration-300">Armaan Dixit</p>
+                      <p className="font-mono text-[9px] tracking-widest text-[#2a2a2a] group-hover:text-[#14c7c0]/50 transition-colors duration-300 uppercase">Co-founder</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2 pt-1 border-t border-[#141414]">
+                    <a
+                      href="mailto:armaandixit133@gmail.com"
+                      className="flex items-center gap-2 text-[13px] font-mono text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300 group/link"
+                    >
+                      <span className="text-[#14c7c0]/40 group-hover/link:text-[#14c7c0] transition-colors duration-300 text-[10px]">✉</span>
+                      armaandixit133@gmail.com
+                    </a>
+                    <a
+                      href="tel:+917758069290"
+                      className="flex items-center gap-2 text-[13px] font-mono text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300 group/link"
+                    >
+                      <span className="text-[#14c7c0]/40 group-hover/link:text-[#14c7c0] transition-colors duration-300 text-[10px]">◎</span>
+                      +91 77580 69290
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shubham Garje */}
+              <div className="group relative bg-[#0a0a0a]/40 border border-[#141414] hover:border-[#14c7c0]/30 rounded-xl p-6 transition-all duration-500 overflow-hidden">
+                {/* Teal corner glow */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-xl"
+                  style={{ background: "radial-gradient(circle at 100% 0%, rgba(20,199,192,0.07) 0%, transparent 60%)" }}
+                />
+                {/* Accent top bar */}
+                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#14c7c0]/30 to-[#14c7c0]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="relative z-10 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-[#14c7c0]/10 border border-[#14c7c0]/20 flex items-center justify-center group-hover:bg-[#14c7c0]/15 transition-colors duration-300">
+                      <span className="font-mono text-[13px] font-semibold text-[#14c7c0]">SG</span>
+                    </div>
+                    <div>
+                      <p className="text-[#f0f0f0] font-medium text-[15px] leading-tight group-hover:text-[#14c7c0] transition-colors duration-300">Shubham Garje</p>
+                      <p className="font-mono text-[9px] tracking-widest text-[#2a2a2a] group-hover:text-[#14c7c0]/50 transition-colors duration-300 uppercase">Co-founder</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2 pt-1 border-t border-[#141414]">
+                    <a
+                      href="mailto:shubhamvijaygarje@gmail.com"
+                      className="flex items-center gap-2 text-[13px] font-mono text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300 group/link"
+                    >
+                      <span className="text-[#14c7c0]/40 group-hover/link:text-[#14c7c0] transition-colors duration-300 text-[10px]">✉</span>
+                      shubhamvijaygarje@gmail.com
+                    </a>
+                    <a
+                      href="tel:+918976551281"
+                      className="flex items-center gap-2 text-[13px] font-mono text-[#5a5a5a] hover:text-[#14c7c0] transition-colors duration-300 group/link"
+                    >
+                      <span className="text-[#14c7c0]/40 group-hover/link:text-[#14c7c0] transition-colors duration-300 text-[10px]">◎</span>
+                      +91 89765 51281
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </div>
