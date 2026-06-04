@@ -122,27 +122,19 @@ void main() {
 function ShaderPlane() {
   const meshRef = useRef<THREE.Mesh>(null);
   const { viewport } = useThree();
-  const scrollSpeedRef = useRef(0);
-  const lastScrollRef = useRef(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const current = window.scrollY;
-      scrollSpeedRef.current = Math.abs(current - lastScrollRef.current) * 0.01;
-      lastScrollRef.current = current;
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
     meshRef.current.scale.set(state.viewport.width, state.viewport.height, 1);
     const material = meshRef.current.material as THREE.ShaderMaterial;
     material.uniforms.u_time.value = state.clock.elapsedTime;
+    // Read Lenis-smoothed velocity from CSS custom property set by ScrollProvider
+    const rawVel = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--lenis-velocity") || "0"
+    );
+    // Lerp toward Lenis velocity * small scale factor for the chromatic offset
     material.uniforms.u_scrollSpeed.value +=
-      (scrollSpeedRef.current - material.uniforms.u_scrollSpeed.value) * 0.05;
-    scrollSpeedRef.current *= 0.95;
+      (rawVel * 0.6 - material.uniforms.u_scrollSpeed.value) * 0.08;
   });
 
   return (

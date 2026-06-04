@@ -1,166 +1,127 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Lenis from "lenis";
+import { ReactLenis, useLenis } from "lenis/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SNAP_SECTIONS = [
-  "hero",
-  "metrics",
-  "services",
-  "process",
-  "tech",
-  "proof",
-  "about",
-  "contact",
-];
+// ─── Tuning ───────────────────────────────────────────────────────────────────
+const MAX_SKEW     = 4;    // degrees — max tilt at peak velocity
+const SKEW_DAMPING = 0.08; // how fast skew catches up (lower = more lag/drama)
+const VEL_SCALE    = 0.35; // velocity → degrees multiplier
 
-const DELTA_THRESHOLD = 20;
-const ANIMATION_DURATION = 1300; // ms — must match lenis.scrollTo duration
+// ─── Scroll effects: skew + progress bar + CSS vars ──────────────────────────
+function ScrollEffects() {
+  const currentSkew = useRef(0);
+  const barRef      = useRef<HTMLDivElement>(null);
+  const rafRef      = useRef<number>(0);
 
-function getSectionTops(): number[] {
-  return SNAP_SECTIONS.flatMap((id) => {
-    const el = document.getElementById(id);
-    if (!el) return [];
-    return [el.getBoundingClientRect().top + window.scrollY];
-  });
-}
+  // Wire up per-frame effects via Lenis scroll event
+  useLenis(({ scroll, limit, velocity }) => {
+    // 1. Update ScrollTrigger
+    ScrollTrigger.update();
 
-function getNearestSectionIndex(scrollY: number, tops: number[]): number {
-  let closest = 0;
-  let minDist = Infinity;
-  tops.forEach((top, i) => {
-    const dist = Math.abs(top - scrollY);
-    if (dist < minDist) {
-      minDist = dist;
-      closest = i;
+    // 2. Scroll progress bar (scaleX 0→1)
+    if (barRef.current) {
+      const progress = limit > 0 ? scroll / limit : 0;
+      barRef.current.style.transform = `scaleX(${progress})`;
+    }
+
+    // 3. Velocity as a CSS custom property — Hero shader & any other component can read it
+    document.documentElement.style.setProperty(
+      "--lenis-velocity",
+      String(Math.abs(velocity).toFixed(3))
+    );
+
+    // 4. Skew: lerp toward target, apply to <main>
+    const targetSkew = Math.max(-MAX_SKEW, Math.min(MAX_SKEW, velocity * VEL_SCALE));
+    currentSkew.current += (targetSkew - currentSkew.current) * SKEW_DAMPING;
+
+    // We write to <main> directly for zero-overhead DOM mutation
+    const main = document.querySelector<HTMLElement>("main");
+    if (main) {
+      main.style.transform    = `skewY(${currentSkew.current.toFixed(4)}deg)`;
+      main.style.willChange   = "transform";
     }
   });
-  return closest;
+
+  // Decay skew back to 0 when Lenis is idle (no scroll event fires)
+  useEffect(() => {
+    let raf: number;
+    const decay = () => {
+      if (Math.abs(currentSkew.current) > 0.001) {
+        currentSkew.current *= 0.85; // smooth ease-out decay
+        const main = document.querySelector<HTMLElement>("main");
+        if (main) {
+          main.style.transform = `skewY(${currentSkew.current.toFixed(4)}deg)`;
+        }
+      }
+      raf = requestAnimationFrame(decay);
+    };
+    raf = requestAnimationFrame(decay);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    /* Progress bar — fixed at top, 2 px tall, teal → purple gradient */
+    <div
+      aria-hidden
+      style={{
+        position:   "fixed",
+        top:        0,
+        left:       0,
+        right:      0,
+        height:     "2px",
+        zIndex:     9998,
+        background: "rgba(255,255,255,0.04)",
+        pointerEvents: "none",
+      }}
+    >
+      <div
+        ref={barRef}
+        style={{
+          height:          "100%",
+          background:      "linear-gradient(90deg, #14c7c0 0%, #0e8c87 60%, #5b8af0 100%)",
+          transformOrigin: "left center",
+          transform:       "scaleX(0)",
+          willChange:      "transform",
+          // Glow beneath the bar
+          boxShadow:       "0 0 8px 1px rgba(20,199,192,0.6)",
+        }}
+      />
+    </div>
+  );
 }
 
+// ─── Root provider ────────────────────────────────────────────────────────────
 export default function ScrollProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const reducedMotion = useReducedMotion();
-  const lenisRef = useRef<Lenis | null>(null);
 
-  useEffect(() => {
-    if (reducedMotion) return;
+  if (reducedMotion) return <>{children}</>;
 
-    const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
-    lenisRef.current = lenis;
-    lenis.on("scroll", ScrollTrigger.update);
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
-
-    // --- Section Snapping ---
-    let locked = false;
-    let lockTimeout: ReturnType<typeof setTimeout> | null = null;
-    // Set to true once the user arrives at the last section and scrolls down.
-    // Resets when they scroll back up past the second-to-last section.
-    let snapDisabled = false;
-
-    function unlock() {
-      locked = false;
-      if (lockTimeout) {
-        clearTimeout(lockTimeout);
-        lockTimeout = null;
-      }
-    }
-
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < DELTA_THRESHOLD) return;
-
-      const direction = e.deltaY > 0 ? 1 : -1;
-      const tops = getSectionTops();
-      if (!tops.length) return;
-
-      const scrollY = window.scrollY;
-      const lastIndex = tops.length - 1;
-      const currentIndex = getNearestSectionIndex(scrollY, tops);
-
-      // ── FREE SCROLL: ONE-WAY LATCH ───────────────────────────────
-      // Once the user scrolls down from the last section, snapping is
-      // permanently disabled for the rest of the session.
-      if (!snapDisabled && currentIndex === lastIndex && direction > 0) {
-        snapDisabled = true;
-        if (locked) unlock();
-      }
-      if (snapDisabled) return; // let Lenis scroll freely forever after
-      // ─────────────────────────────────────────────────────────────
-
-      // If currently animating a snap, block extra scroll.
-      if (locked) {
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-
-      const targetIndex = Math.max(
-        0,
-        Math.min(lastIndex, currentIndex + direction)
-      );
-
-      // Already at the nearest section in that direction — no snap needed.
-      if (targetIndex === currentIndex) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      locked = true;
-      // Safety: always unlock after max animation time so we never get stuck.
-      lockTimeout = setTimeout(unlock, ANIMATION_DURATION + 400);
-
-      lenis.scrollTo(tops[targetIndex], {
-        duration: 1.3,
-        easing: (t: number) =>
-          t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
-        onComplete: () => {
-          // Short buffer after landing so a stray event doesn't immediately re-fire.
-          if (lockTimeout) clearTimeout(lockTimeout);
-          lockTimeout = setTimeout(unlock, 150);
-        },
-      });
-    };
-
-    window.addEventListener("wheel", handleWheel, {
-      passive: false,
-      capture: true,
-    });
-
-    // Recalculate scroll dimensions when body height changes dynamically
-    const resizeObserver = new ResizeObserver(() => {
-      lenis.resize();
-      ScrollTrigger.refresh();
-    });
-
-    if (document.body) {
-      resizeObserver.observe(document.body);
-    }
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel, { capture: true });
-      if (lockTimeout) clearTimeout(lockTimeout);
-      resizeObserver.disconnect();
-      lenis.destroy();
-      gsap.ticker.remove(lenis.raf);
-    };
-  }, [reducedMotion]);
-
-  return <>{children}</>;
+  return (
+    <ReactLenis
+      root
+      options={{
+        // lerp: exponential decay coefficient — 0.08 feels premium and weighty
+        lerp: 0.08,
+        // Smooth mouse wheel
+        smoothWheel: true,
+        // Also smooth touch-based scroll on mobile
+        syncTouch: true,
+        // Slightly longer touch inertia duration (seconds)
+        syncTouchLerp: 0.06,
+      }}
+    >
+      <ScrollEffects />
+      {children}
+    </ReactLenis>
+  );
 }
